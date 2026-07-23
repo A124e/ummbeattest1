@@ -1,0 +1,6 @@
+{
+  "name": "Test1",
+  "description": "A beat guidance Android app with customizable speed curves (0.5 to 10 beats/sec), round timers, randomized pauses, half/double speed modifiers, and Web Audio synthesis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
