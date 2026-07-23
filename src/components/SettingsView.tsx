@@ -41,6 +41,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const curveOptions: { type: CurveType; label: string; desc: string }[] = [
     { type: 'stochastic', label: 'Random Steps & Dips', desc: 'Unpredictable step jumps with random hold spaces & speed drops' },
     { type: 'random_wave', label: 'Random Wave', desc: 'Rising wave of tempo with surges, plateaus, and dips' },
+    { type: 'pyramid', label: 'Pyramid Peak', desc: 'Climbs smoothly to peak tempo at mid-round then descends' },
+    { type: 'interval_pulses', label: 'HIIT Pulse Intervals', desc: 'Alternating high/low tempo sprint pulses on an ascending trend' },
+    { type: 'sawtooth', label: 'Sawtooth Cascades', desc: 'Repeating ramp waves that drop back before climbing higher' },
+    { type: 'burst_plateau', label: 'Staircase Plateau', desc: 'Rapid step increases with flat hold plateaus for stamina' },
+    { type: 'parabolic', label: 'Parabolic Overdrive', desc: 'Gradual start that turns into an explosive end-game acceleration' },
     { type: 'linear', label: 'Linear Ramp', desc: 'Constant smooth rate of speed increase' },
     { type: 'exponential', label: 'Exponential', desc: 'Accelerates faster towards end' },
     { type: 'logarithmic', label: 'Logarithmic', desc: 'Fast initial ramp, then tapers' },
@@ -181,20 +186,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           ))}
         </div>
 
-        {/* If Step-wise or Stochastic selected, show step count slider */}
-        {(config.curveType === 'stepwise' || config.curveType === 'stochastic') && (
+        {/* If Step-wise, Stochastic, Sawtooth, HIIT Pulses, or Burst Plateau selected, show step/cycle count slider */}
+        {['stepwise', 'stochastic', 'sawtooth', 'interval_pulses', 'burst_plateau'].includes(config.curveType) && (
           <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
-            <span className="text-slate-400">Random Step Segments:</span>
+            <span className="text-slate-400">
+              {config.curveType === 'interval_pulses' || config.curveType === 'sawtooth'
+                ? 'Interval Cycles / Pulses:'
+                : 'Step Segments:'}
+            </span>
             <div className="flex items-center gap-2">
               <input
                 type="range"
-                min={4}
+                min={3}
                 max={16}
-                value={config.stepCount || 8}
+                value={config.stepCount || 6}
                 onChange={(e) => updateField('stepCount', parseInt(e.target.value))}
                 className="w-24 accent-cyan-400"
               />
-              <span className="font-mono text-cyan-400 font-bold">{config.stepCount || 8} steps</span>
+              <span className="font-mono text-cyan-400 font-bold">{config.stepCount || 6} count</span>
             </div>
           </div>
         )}

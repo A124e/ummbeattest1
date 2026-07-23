@@ -128,6 +128,74 @@ export function calculateBpsAtProgress(
       break;
     }
 
+    case 'pyramid': {
+      // Pyramid / Bell Curve: Peaks at midpoint, then decreases back down
+      // Shift apex with timeshift parameter
+      const apex = Math.max(0.2, Math.min(0.8, 0.5 + clampedShift));
+      if (clampT <= apex) {
+        const progressToApex = clampT / apex;
+        factor = Math.pow(progressToApex, steepness);
+      } else {
+        const progressFromApex = (clampT - apex) / (1 - apex);
+        factor = Math.pow(1 - progressFromApex, steepness);
+      }
+      break;
+    }
+
+    case 'interval_pulses': {
+      // High / Low tempo HIIT pulses superimposed on a rising baseline trend
+      const pulses = Math.max(3, stepCount || 6);
+      const trend = Math.pow(tShifted, 0.9 * steepness);
+      // Sine wave pulse between 0 and 1
+      const pulseWave = (Math.sin(tShifted * Math.PI * 2 * pulses - Math.PI / 2) + 1) / 2;
+      const amplitude = 0.35 * Math.min(1.5, steepness);
+      factor = Math.max(0, Math.min(1.0, trend * (1 - amplitude) + pulseWave * amplitude));
+      break;
+    }
+
+    case 'sawtooth': {
+      // Repeating ramp cascades that drop back slightly before reaching higher peaks
+      const cycles = Math.max(3, stepCount || 5);
+      const cyclePos = (tShifted * cycles) % 1;
+      const currentCycleIndex = Math.floor(tShifted * cycles);
+      
+      // Each cycle starts at a baseline and ramps up
+      const cycleStartFactor = Math.pow(currentCycleIndex / cycles, steepness);
+      const cycleEndFactor = Math.pow((currentCycleIndex + 1) / cycles, steepness);
+      
+      const rampWithinCycle = Math.pow(cyclePos, steepness);
+      factor = cycleStartFactor + (cycleEndFactor - cycleStartFactor) * rampWithinCycle;
+      break;
+    }
+
+    case 'burst_plateau': {
+      // Staircase with smooth sigmoid bursts between flat plateaus
+      const numSteps = Math.max(3, stepCount || 5);
+      const scaledT = tShifted * numSteps;
+      const currentStep = Math.floor(scaledT);
+      const fraction = scaledT - currentStep;
+
+      // Sigmoid transition in the first 25% of each step segment, 75% plateau
+      let transitionFactor = 0;
+      if (fraction < 0.3) {
+        const normFrac = fraction / 0.3;
+        transitionFactor = (1 - Math.cos(normFrac * Math.PI)) / 2;
+      } else {
+        transitionFactor = 1.0;
+      }
+
+      const stepBase = Math.pow(currentStep / numSteps, steepness);
+      const stepNext = Math.pow(Math.min(numSteps, currentStep + 1) / numSteps, steepness);
+      factor = stepBase + (stepNext - stepBase) * transitionFactor;
+      break;
+    }
+
+    case 'parabolic': {
+      // Quadratic parabolic acceleration - rapid late-stage burst
+      factor = Math.pow(tShifted, 3.0 * steepness);
+      break;
+    }
+
     default:
       factor = Math.pow(tShifted, steepness);
   }

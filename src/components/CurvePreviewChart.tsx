@@ -72,6 +72,11 @@ export const CurvePreviewChart: React.FC<CurvePreviewChartProps> = ({
     switch (type) {
       case 'stochastic': return 'Random Steps & Dips';
       case 'random_wave': return 'Random Wave';
+      case 'pyramid': return 'Pyramid Peak';
+      case 'interval_pulses': return 'HIIT Pulse Intervals';
+      case 'sawtooth': return 'Sawtooth Cascades';
+      case 'burst_plateau': return 'Staircase Plateau';
+      case 'parabolic': return 'Parabolic Overdrive';
       case 'stepwise': return 'Stepwise Ramp';
       case 'scurve': return 'S-Curve';
       case 'exponential': return 'Exponential';

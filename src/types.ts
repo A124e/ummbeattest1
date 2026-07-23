@@ -1,4 +1,16 @@
-export type CurveType = 'linear' | 'exponential' | 'logarithmic' | 'scurve' | 'stepwise' | 'stochastic' | 'random_wave';
+export type CurveType = 
+  | 'linear' 
+  | 'exponential' 
+  | 'logarithmic' 
+  | 'scurve' 
+  | 'stepwise' 
+  | 'stochastic' 
+  | 'random_wave'
+  | 'pyramid'
+  | 'interval_pulses'
+  | 'sawtooth'
+  | 'burst_plateau'
+  | 'parabolic';
 
 export type SoundType = 'digital' | 'woodblock' | 'synth' | 'beep' | 'bass' | 'tick';
 
